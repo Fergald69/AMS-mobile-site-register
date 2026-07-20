@@ -1,0 +1,205 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AMS Mobile Site Register</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Prototype 03 - 18 Jul 2026</p>
+        <h1>AMS Site Register</h1>
+      </div>
+      <button class="master-link" id="masterInfoButton" type="button">Info</button>
+    </header>
+
+    <section class="data-status-card" id="statusView">
+      <div>
+        <span>Current export</span>
+        <strong>301 assets</strong>
+      </div>
+      <div>
+        <span>Buildings</span>
+        <strong>8 records</strong>
+      </div>
+      <div>
+        <span>Mode</span>
+        <strong>Read-only</strong>
+      </div>
+    </section>
+
+    <section class="prototype-note-card" id="infoView">
+      <div>
+        <strong>Read-only mobile prototype</strong>
+        <span>Current data snapshot from the AMS master register. Asset locations are approximate and will be aligned later using the site grid.</span>
+      </div>
+      <button class="mini-action" id="inlineInfoButton" type="button">View Summary</button>
+    </section>
+
+    <section class="search-card" id="searchView">
+      <label for="assetSearch">Search</label>
+      <input id="assetSearch" type="search" placeholder="Search assets, buildings, grid refs...">
+    </section>
+
+    <section class="filter-strip" aria-label="Asset filters">
+      <button class="active" data-filter="all">All</button>
+      <button data-filter="doors">Doors</button>
+      <button data-filter="lighting">Lighting</button>
+      <button data-filter="streetlights">Street Lights</button>
+      <button data-filter="cctv">CCTV</button>
+      <button data-filter="salt">Salt</button>
+      <button data-filter="rodent">Rodent</button>
+      <button data-filter="ev">EV</button>
+      <button data-filter="bike">Bike</button>
+      <button data-filter="carparks">Car Parks</button>
+      <button data-filter="security">Gates</button>
+      <button data-filter="fire">Fire</button>
+      <button data-filter="water">Water</button>
+      <button data-filter="defib">Defib</button>
+      <button data-filter="building">Buildings</button>
+      <button data-filter="other">Other</button>
+    </section>
+
+    <section class="summary-card" id="summaryView">
+      <div class="section-title">
+        <h2>Asset Summary</h2>
+        <span>Tap to filter</span>
+      </div>
+      <div id="assetSummary" class="asset-summary-grid"></div>
+    </section>
+
+    <section class="map-card" id="mapView">
+      <div class="section-title">
+        <h2>Mobile Map Preview</h2>
+        <span id="resultCount">0 assets</span>
+      </div>
+      <div class="mini-map" id="miniMap" aria-label="Simplified AMS site map preview">
+        <div class="zone zone-west">DDW</div>
+        <div class="zone zone-dispatch">Dispatch</div>
+        <div class="zone zone-a">Building A</div>
+        <div class="zone zone-press">Press 3 & 4</div>
+        <div class="zone zone-bcd">BCD</div>
+        <div class="zone zone-house">AMS House</div>
+      </div>
+    </section>
+
+    <section class="building-card" id="buildingsView">
+      <div class="section-title">
+        <h2>Buildings</h2>
+        <button class="mini-action" id="clearBuildingFilter" type="button">Show All</button>
+      </div>
+      <div id="buildingList" class="building-list"></div>
+    </section>
+
+    <section class="asset-list-card" id="registerView">
+      <div class="section-title">
+        <h2>Asset Register</h2>
+        <span>Read-only</span>
+      </div>
+      <div id="assetList" class="asset-list"></div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Primary app navigation">
+    <button type="button" data-target="mapView" class="active">Map</button>
+    <button type="button" data-target="buildingsView">Buildings</button>
+    <button type="button" data-target="registerView">Register</button>
+    <button type="button" data-target="searchView">Search</button>
+  </nav>
+
+  <aside class="detail-sheet" id="detailSheet" aria-hidden="true">
+    <div class="sheet-panel">
+      <button class="close-sheet" id="closeSheet" type="button">Close</button>
+      <p class="eyebrow" id="detailType">Asset</p>
+      <h2 id="detailTitle">Asset</h2>
+      <dl>
+        <div><dt>ID</dt><dd id="detailId"></dd></div>
+        <div><dt>Building</dt><dd id="detailBuilding"></dd></div>
+        <div><dt>Location</dt><dd id="detailLocation"></dd></div>
+        <div><dt>Grid</dt><dd id="detailGrid"></dd></div>
+        <div><dt>Group</dt><dd id="detailGroup"></dd></div>
+        <div><dt>Quantity</dt><dd id="detailQuantity"></dd></div>
+        <div><dt>Status</dt><dd id="detailStatus"></dd></div>
+      </dl>
+      <p id="detailSummary"></p>
+    </div>
+  </aside>
+
+  <aside class="detail-sheet" id="buildingSheet" aria-hidden="true">
+    <div class="sheet-panel">
+      <button class="close-sheet" id="closeBuildingSheet" type="button">Close</button>
+      <p class="eyebrow">Building</p>
+      <h2 id="buildingTitle">Building</h2>
+      <dl>
+        <div><dt>Status</dt><dd id="buildingStatus"></dd></div>
+        <div><dt>Records</dt><dd id="buildingRecordCount"></dd></div>
+        <div><dt>Main Groups</dt><dd id="buildingGroups"></dd></div>
+      </dl>
+      <div id="buildingBreakdown" class="building-breakdown"></div>
+      <button class="primary-sheet-action" id="showBuildingAssets" type="button">Show this building's assets</button>
+    </div>
+  </aside>
+
+  <aside class="detail-sheet" id="masterSheet" aria-hidden="true">
+    <div class="sheet-panel">
+      <button class="close-sheet" id="closeMasterSheet" type="button">Close</button>
+      <p class="eyebrow">Prototype Information</p>
+      <h2>Current Mobile Version</h2>
+      <dl>
+        <div><dt>Version</dt><dd>Prototype 03</dd></div>
+        <div><dt>Data Date</dt><dd>18 July 2026</dd></div>
+        <div><dt>Source</dt><dd>AMS current master HTML</dd></div>
+        <div><dt>Export</dt><dd>All Site Assets Index</dd></div>
+        <div><dt>Assets</dt><dd>283 records</dd></div>
+        <div><dt>Buildings</dt><dd>8 records</dd></div>
+        <div><dt>Mode</dt><dd>Read-only mobile prototype</dd></div>
+      </dl>
+      <div class="info-panel">
+        <h3>Included</h3>
+        <ul class="info-list">
+          <li>Asset register search and filters</li>
+          <li>Building list and building summaries</li>
+          <li>Asset detail panels</li>
+          <li>Current master data snapshot held inside this single file</li>
+        </ul>
+      </div>
+      <div class="info-panel warning">
+        <h3>Known Issues</h3>
+        <ul class="info-list">
+          <li>Map asset positions are approximate in this phone prototype.</li>
+          <li>Press 3 &amp; 4 is included as a placeholder and will be populated later.</li>
+          <li>Mobile map building shapes are simplified and not yet the full master SVG geometry.</li>
+          <li>Future version should use the master SVG/grid coordinates for accurate marker placement.</li>
+        </ul>
+      </div>
+      <p>This phone version carries an exported copy of the master data inside the app. The full master file is still held on the PC version.</p>
+    </div>
+  </aside>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
