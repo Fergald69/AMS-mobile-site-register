@@ -152,11 +152,16 @@
       </div>
       <div id="buildingBreakdown" class="building-breakdown"></div>
       <div class="building-filter-panel">
+        <label for="buildingElevationFilter">Elevation / area</label>
+        <select id="buildingElevationFilter">
+          <option value="all">All elevations / areas</option>
+        </select>
         <label for="buildingAssetFilter">Asset category</label>
         <select id="buildingAssetFilter">
           <option value="all">All asset categories</option>
         </select>
       </div>
+      <div id="buildingAssetMap" class="building-local-map" aria-label="Selected building asset map"></div>
       <div id="buildingAssetList" class="building-asset-list"></div>
       <button class="primary-sheet-action" id="showBuildingAssets" type="button">Show this building's assets</button>
     </div>

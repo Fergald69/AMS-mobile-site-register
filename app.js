@@ -55,6 +55,26 @@ const markerTypeOffsets = {
 
 const hiddenMapTypes = new Set(["building", "other"]);
 
+const buildingShapeClasses = {
+  "Press 3 & 4": "local-shape-press",
+  "DDW / Sheet Metal Fab/TB": "local-shape-ddw",
+  "DDW / Sheet Metal Fab": "local-shape-ddw",
+  "Dispatch Warehouse": "local-shape-dispatch",
+  "Building A": "local-shape-a",
+  "Building BCD": "local-shape-bcd",
+  "AMS House": "local-shape-house"
+};
+
+const buildingLocalBounds = {
+  "Press 3 & 4": { north: 8, south: 91, west: 10, east: 34 },
+  "DDW / Sheet Metal Fab/TB": { north: 20, south: 82, west: 26, east: 61 },
+  "DDW / Sheet Metal Fab": { north: 20, south: 82, west: 26, east: 61 },
+  "Dispatch Warehouse": { north: 15, south: 84, west: 52, east: 73 },
+  "Building A": { north: 20, south: 80, west: 38, east: 90 },
+  "Building BCD": { north: 28, south: 86, west: 18, east: 88 },
+  "AMS House": { north: 38, south: 78, west: 60, east: 90 }
+};
+
 const assets = [
   {
     "id": "AMS-HOUSE-EV-CHARGER-232",
@@ -1527,7 +1547,7 @@ const assets = [
   },
   {
     "id": "BUILDING-A-ELECTRICAL-129",
-    "type": "ev",
+    "type": "other",
     "label": "Electrical charger and cable reel",
     "building": "Building A",
     "location": "West",
@@ -3583,7 +3603,7 @@ const assets = [
     "id": "DDW-SHEET-METAL-FAB-TB-BICYCLE-STORAGE-046",
     "type": "bike",
     "label": "Bicycle shelter BS-DDW-E-01",
-    "building": "DDW / Sheet Metal Fab/TB",
+    "building": "Site-wide",
     "location": "East - Grid I7",
     "grid": "TBC",
     "quantity": "1",
@@ -3594,7 +3614,7 @@ const assets = [
   },
   {
     "id": "DDW-SHEET-METAL-FAB-TB-WINDOWS-GLAZING-031",
-    "type": "ev",
+    "type": "other",
     "label": "Lower-level top-hung openings",
     "building": "DDW / Sheet Metal Fab/TB",
     "location": "North",
@@ -3607,7 +3627,7 @@ const assets = [
   },
   {
     "id": "DDW-SHEET-METAL-FAB-TB-WINDOWS-GLAZING-032",
-    "type": "ev",
+    "type": "other",
     "label": "Upper-level top-hung openings",
     "building": "DDW / Sheet Metal Fab/TB",
     "location": "North",
@@ -3622,7 +3642,7 @@ const assets = [
     "id": "DDW-SHEET-METAL-FAB-TB-FIRE-SAFETY-043",
     "type": "fire",
     "label": "Fire extinguisher",
-    "building": "DDW / Sheet Metal Fab/TB",
+    "building": "Site-wide",
     "location": "South",
     "grid": "TBC",
     "quantity": "1",
@@ -3830,7 +3850,7 @@ const assets = [
     "id": "BS-DDW-E-01",
     "type": "bike",
     "label": "DDW bike shed grid reference marker",
-    "building": "Dispatch Warehouse",
+    "building": "Site-wide",
     "location": "Grid I7 - SVG x=422.712, y=325.000",
     "grid": "I7",
     "quantity": "1",
@@ -3843,7 +3863,7 @@ const assets = [
     "id": "CP-DDW-I8-01",
     "type": "carparks",
     "label": "DDW side parking at Grid I8, 12 spaces available",
-    "building": "Dispatch Warehouse",
+    "building": "DDW / Sheet Metal Fab/TB",
     "location": "Grid I8",
     "grid": "I8",
     "quantity": "1",
@@ -3856,7 +3876,7 @@ const assets = [
     "id": "DDW-CCTV-H7-01",
     "type": "cctv",
     "label": "DDW-CCTV-H7-01 - DDW / Sheet Metal Fab/TB CCTV camera - bottom of Grid H7 on DDW blue outline",
-    "building": "Dispatch Warehouse",
+    "building": "DDW / Sheet Metal Fab/TB",
     "location": "Grid H7 - SVG x=387.0, y=350.0",
     "grid": "H7",
     "quantity": "1",
@@ -3869,7 +3889,7 @@ const assets = [
     "id": "DDW-CCTV-I7-01",
     "type": "cctv",
     "label": "DDW-CCTV-I7-01 - DDW / Sheet Metal Fab/TB CCTV camera - top of the vertical blue line at Grid I7",
-    "building": "Dispatch Warehouse",
+    "building": "DDW / Sheet Metal Fab/TB",
     "location": "Grid I7 - SVG x=387.0, y=300.0",
     "grid": "I7",
     "quantity": "1",
@@ -5806,8 +5826,10 @@ const buildingListEl = document.getElementById("buildingList");
 const sheetEl = document.getElementById("detailSheet");
 const buildingSheetEl = document.getElementById("buildingSheet");
 const masterSheetEl = document.getElementById("masterSheet");
+const buildingElevationFilterEl = document.getElementById("buildingElevationFilter");
 const buildingAssetFilterEl = document.getElementById("buildingAssetFilter");
 const buildingAssetListEl = document.getElementById("buildingAssetList");
+const buildingAssetMapEl = document.getElementById("buildingAssetMap");
 const showBuildingTasksButton = document.getElementById("showBuildingTasks");
 const showBuildingProvidersButton = document.getElementById("showBuildingProviders");
 let selectedBuildingForSheet = null;
@@ -5882,6 +5904,10 @@ buildingAssetFilterEl.addEventListener("change", () => {
   if (selectedBuildingForSheet) renderBuildingAssetList(selectedBuildingForSheet.name);
 });
 
+buildingElevationFilterEl.addEventListener("change", () => {
+  if (selectedBuildingForSheet) renderBuildingAssetList(selectedBuildingForSheet.name);
+});
+
 document.querySelectorAll("[data-building-target]").forEach((button) => {
   button.addEventListener("click", () => {
     const building = buildings.find((item) => item.name === button.dataset.buildingTarget);
@@ -5914,11 +5940,12 @@ function getFilteredAssets() {
 function renderBuildings() {
   buildingListEl.innerHTML = "";
   buildings.forEach((building) => {
+    const buildingAssetCount = assets.filter((asset) => asset.building === building.name).length;
     const row = document.createElement("button");
     row.className = "building-row";
     row.type = "button";
     row.classList.toggle("active", activeBuilding === building.name);
-    row.innerHTML = `<div><strong>${building.name}</strong><span>${building.status}</span></div><span>${building.assetCount}</span>`;
+    row.innerHTML = `<div><strong>${building.name}</strong><span>${building.status}</span></div><span>${buildingAssetCount}</span>`;
     row.addEventListener("click", () => {
       openBuildingDetail(building);
     });
@@ -5945,7 +5972,7 @@ function openBuildingDetail(building) {
     : "No asset records yet";
   document.getElementById("buildingTitle").textContent = building.name;
   document.getElementById("buildingStatus").textContent = building.status;
-  document.getElementById("buildingRecordCount").textContent = `${building.assetCount} records`;
+  document.getElementById("buildingRecordCount").textContent = `${buildingAssets.length} records`;
   document.getElementById("buildingGroups").textContent = groupText;
   const breakdown = document.getElementById("buildingBreakdown");
   breakdown.innerHTML = "";
@@ -5967,6 +5994,7 @@ function openBuildingDetail(building) {
       renderBuildingAssetList(building.name);
     });
   });
+  populateBuildingElevationFilter(buildingAssets);
   populateBuildingAssetFilter(counts);
   renderBuildingAssetList(building.name);
   buildingSheetEl.classList.add("open");
@@ -5991,11 +6019,33 @@ function populateBuildingAssetFilter(counts) {
   buildingAssetFilterEl.value = counts[current] ? current : "all";
 }
 
+function populateBuildingElevationFilter(buildingAssets) {
+  const current = buildingElevationFilterEl.value || "all";
+  const areas = buildingAssets.reduce((acc, asset) => {
+    const area = getAssetArea(asset);
+    acc[area] = (acc[area] || 0) + 1;
+    return acc;
+  }, {});
+  buildingElevationFilterEl.innerHTML = `<option value="all">All elevations / areas</option>`;
+  getSortedAreaLabels(Object.keys(areas)).forEach((area) => {
+    const option = document.createElement("option");
+    option.value = area;
+    option.textContent = `${area} (${areas[area]})`;
+    buildingElevationFilterEl.appendChild(option);
+  });
+  buildingElevationFilterEl.value = areas[current] ? current : "all";
+}
+
 function renderBuildingAssetList(buildingName) {
   const selectedType = buildingAssetFilterEl.value;
+  const selectedArea = buildingElevationFilterEl.value;
   const buildingAssets = assets.filter((asset) => {
-    return asset.building === buildingName && (selectedType === "all" || asset.type === selectedType);
+    const matchesType = selectedType === "all" || asset.type === selectedType;
+    const matchesArea = selectedArea === "all" || getAssetArea(asset) === selectedArea;
+    return asset.building === buildingName && matchesType && matchesArea;
   });
+
+  renderBuildingAssetMap(buildingName, buildingAssets, selectedType);
 
   if (!buildingAssets.length) {
     buildingAssetListEl.innerHTML = `<p>No records in this category.</p>`;
@@ -6008,7 +6058,8 @@ function renderBuildingAssetList(buildingName) {
     item.className = "building-asset-item";
     item.type = "button";
     const typeLabel = getAssetTypeLabels()[asset.type] || asset.type;
-    item.innerHTML = `<strong>${asset.label}</strong><span>${typeLabel} · ${asset.grid || "No grid"} · ${asset.status || "Recorded"}</span><em>${asset.location || asset.summary || "Location detail pending"}</em>`;
+    const area = getAssetArea(asset);
+    item.innerHTML = `<strong>${asset.label}</strong><span>${typeLabel} · ${area} · ${asset.status || "Recorded"}</span><em>${asset.summary || asset.location || "Location detail pending"}</em>`;
     item.addEventListener("click", () => openDetail(asset));
     buildingAssetListEl.appendChild(item);
   });
@@ -6019,6 +6070,259 @@ function renderBuildingAssetList(buildingName) {
     item.innerHTML = `<strong>${buildingAssets.length - 18} more records</strong><span>Use the full register list for the remaining records.</span>`;
     buildingAssetListEl.appendChild(item);
   }
+}
+
+function renderBuildingAssetMap(buildingName, buildingAssets, selectedType) {
+  if (!buildingAssetMapEl) return;
+  const shortName = getBuildingShortName(buildingName);
+  const shapeClass = buildingShapeClasses[buildingName] || "local-shape-generic";
+  buildingAssetMapEl.innerHTML = `<div class="local-building-shape ${shapeClass}"><span>${shortName}</span></div>`;
+
+  const plottableAssets = buildingAssets
+    .map((asset) => ({ asset, grid: parseAssetGrid(asset), fallbackPoint: getFallbackPointForAsset(buildingName, asset) }))
+    .filter((entry) => entry.grid || entry.fallbackPoint);
+
+  if (!plottableAssets.length) {
+    const note = document.createElement("div");
+    note.className = "local-map-note";
+    note.textContent = "Grid references pending for this selection.";
+    buildingAssetMapEl.appendChild(note);
+    return;
+  }
+
+  const bounds = getGridBoundsForBuilding(buildingName, plottableAssets.map((entry) => entry.grid).filter(Boolean));
+
+  if (selectedType === "all") {
+    renderLocalCategoryMarkers(plottableAssets, bounds);
+    return;
+  }
+
+  const visibleEntries = plottableAssets.slice(0, 90).map(({ asset, fallbackPoint }) => ({
+    asset,
+    point: getLocalPointForAsset(buildingName, asset, bounds) || fallbackPoint
+  }));
+  const pointGroups = visibleEntries.reduce((acc, entry) => {
+    const key = `${Math.round(entry.point.x)}-${Math.round(entry.point.y)}`;
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(entry);
+    return acc;
+  }, {});
+
+  visibleEntries.forEach(({ asset, point }, index) => {
+    const key = `${Math.round(point.x)}-${Math.round(point.y)}`;
+    const group = pointGroups[key] || [];
+    const groupIndex = group.indexOf(visibleEntries[index]);
+    const spread = getMarkerSpread(group.length, groupIndex);
+    const marker = document.createElement("button");
+    marker.className = `local-map-marker type-${asset.type}`;
+    marker.type = "button";
+    marker.style.left = `${point.x}%`;
+    marker.style.top = `${point.y}%`;
+    marker.style.transform = `translate(-50%, -50%) translate(${spread.x}px, ${spread.y}px)`;
+    marker.title = `${asset.label} (${asset.grid || "No grid"})`;
+    marker.textContent = getMarkerText(asset.type);
+    marker.addEventListener("click", () => openDetail(asset));
+    buildingAssetMapEl.appendChild(marker);
+  });
+
+  if (plottableAssets.length > 90) {
+    const note = document.createElement("div");
+    note.className = "local-map-note compact";
+    note.textContent = `${plottableAssets.length - 90} more records in list`;
+    buildingAssetMapEl.appendChild(note);
+  }
+}
+
+function getMarkerSpread(total, index) {
+  if (total <= 1 || index < 0) return { x: 0, y: 0 };
+  const compact = [
+    { x: -6, y: 0 },
+    { x: 6, y: 0 },
+    { x: 0, y: -7 },
+    { x: 0, y: 7 },
+    { x: -6, y: -6 },
+    { x: 6, y: 6 }
+  ];
+  if (index < compact.length) return compact[index];
+  const angle = (Math.PI * 2 * index) / total;
+  return { x: Math.cos(angle) * 9, y: Math.sin(angle) * 9 };
+}
+
+function renderLocalCategoryMarkers(plottableAssets, bounds) {
+  const groups = plottableAssets.reduce((acc, entry) => {
+    if (hiddenMapTypes.has(entry.asset.type)) return acc;
+    if (!acc[entry.asset.type]) acc[entry.asset.type] = [];
+    acc[entry.asset.type].push(entry);
+    return acc;
+  }, {});
+
+  Object.entries(groups).forEach(([type, entries], index) => {
+    const points = entries.map((entry) => {
+      if (entry.grid) return gridToLocalPoint(entry.grid, bounds);
+      return entry.fallbackPoint;
+    }).filter(Boolean);
+    if (!points.length) return;
+    const point = {
+      x: points.reduce((sum, item) => sum + item.x, 0) / points.length,
+      y: points.reduce((sum, item) => sum + item.y, 0) / points.length
+    };
+    const marker = document.createElement("button");
+    marker.className = `local-map-marker local-category-marker type-${type}`;
+    marker.type = "button";
+    marker.style.left = `${point.x}%`;
+    marker.style.top = `${point.y}%`;
+    marker.style.transform = `translate(-50%, -50%) translate(${(index % 4 - 1.5) * 6}px, ${Math.floor(index / 4) * 5}px)`;
+    marker.title = `${getAssetTypeLabels()[type] || type}: ${entries.length}`;
+    marker.innerHTML = `${getMarkerText(type)}<span>${entries.length}</span>`;
+    marker.addEventListener("click", () => {
+      buildingAssetFilterEl.value = type;
+      renderBuildingAssetList(selectedBuildingForSheet.name);
+    });
+    buildingAssetMapEl.appendChild(marker);
+  });
+}
+
+function getAssetArea(asset) {
+  const text = `${asset.location || ""} ${asset.summary || ""}`.toLowerCase();
+  if (/\bnorth\b/.test(text)) return "North elevation";
+  if (/\bsouth\b/.test(text)) return "South elevation";
+  if (/\beast\b/.test(text)) return "East elevation";
+  if (/\bwest\b/.test(text)) return "West elevation";
+  if (/\bplant\b/.test(text)) return "Plant room";
+  if (/\boffice\b/.test(text)) return "Office area";
+  if (/\byard\b|\bcar park\b|\bcarpark\b|\bparking\b/.test(text)) return "Yard / parking";
+  return "Area to confirm";
+}
+
+function getFallbackPointForAsset(buildingName, asset) {
+  const local = buildingLocalBounds[buildingName];
+  if (!local) return null;
+  const area = getAssetArea(asset);
+  const label = `${asset.label || ""} ${asset.id || ""}`.toLowerCase();
+  let along = 50;
+  if (/ev|charger/.test(label)) along = 18;
+  if (/gutter/.test(label)) along = 38;
+  if (/dp|downpipe|sw|monitoring/.test(label)) along = 72;
+  if (area === "North elevation") {
+    return { x: local.west + ((local.east - local.west) * along) / 100, y: local.north };
+  }
+  if (area === "South elevation") {
+    return { x: local.west + ((local.east - local.west) * along) / 100, y: local.south };
+  }
+  if (area === "East elevation") {
+    return { x: local.east, y: local.north + ((local.south - local.north) * along) / 100 };
+  }
+  if (area === "West elevation") {
+    return { x: local.west, y: local.north + ((local.south - local.north) * along) / 100 };
+  }
+  return null;
+}
+
+function getSortedAreaLabels(labels) {
+  const order = [
+    "North elevation",
+    "South elevation",
+    "East elevation",
+    "West elevation",
+    "Plant room",
+    "Office area",
+    "Yard / parking",
+    "Area to confirm"
+  ];
+  return labels.sort((a, b) => {
+    const ai = order.indexOf(a);
+    const bi = order.indexOf(b);
+    if (ai !== -1 || bi !== -1) return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+    return a.localeCompare(b);
+  });
+}
+
+function getGridBoundsForBuilding(buildingName, grids) {
+  const presets = {
+    "Press 3 & 4": { minCol: 1, maxCol: 10, minRow: 1, maxRow: 18 },
+    "DDW / Sheet Metal Fab/TB": { minCol: 4, maxCol: 11, minRow: 4, maxRow: 11 },
+    "DDW / Sheet Metal Fab": { minCol: 4, maxCol: 11, minRow: 4, maxRow: 11 },
+    "Dispatch Warehouse": { minCol: 7, maxCol: 13, minRow: 4, maxRow: 11 },
+    "Building A": { minCol: 12, maxCol: 26, minRow: 11, maxRow: 21 },
+    "Building BCD": { minCol: 9, maxCol: 24, minRow: 17, maxRow: 25 },
+    "AMS House": { minCol: 19, maxCol: 27, minRow: 18, maxRow: 24 }
+  };
+  if (presets[buildingName]) return presets[buildingName];
+
+  const cols = grids.map((grid) => grid.col);
+  const rows = grids.map((grid) => grid.row);
+  return {
+    minCol: Math.min(...cols) - 1,
+    maxCol: Math.max(...cols) + 1,
+    minRow: Math.min(...rows) - 1,
+    maxRow: Math.max(...rows) + 1
+  };
+}
+
+function getLocalPointForAsset(buildingName, asset, bounds) {
+  const grid = parseAssetGrid(asset);
+  if (!grid) return null;
+
+  const point = gridToLocalPoint(grid, bounds);
+  const local = buildingLocalBounds[buildingName];
+  if (!local) return point;
+
+  return snapPointToBuildingOutline(point, local);
+}
+
+function snapPointToBuildingOutline(point, local) {
+  const x = clamp(point.x, local.west, local.east);
+  const y = clamp(point.y, local.north, local.south);
+  const distances = [
+    { side: "north", value: Math.abs(y - local.north) },
+    { side: "south", value: Math.abs(y - local.south) },
+    { side: "west", value: Math.abs(x - local.west) },
+    { side: "east", value: Math.abs(x - local.east) }
+  ].sort((a, b) => a.value - b.value);
+
+  switch (distances[0].side) {
+    case "north":
+      return { x, y: local.north };
+    case "south":
+      return { x, y: local.south };
+    case "west":
+      return { x: local.west, y };
+    case "east":
+      return { x: local.east, y };
+    default:
+      return { x, y };
+  }
+}
+
+function gridToLocalPoint(grid, bounds) {
+  const colSpan = Math.max(1, bounds.maxCol - bounds.minCol);
+  const rowSpan = Math.max(1, bounds.maxRow - bounds.minRow);
+  return {
+    x: clamp(((grid.col - bounds.minCol) / colSpan) * 86 + 7, 6, 94),
+    y: clamp(((grid.row - bounds.minRow) / rowSpan) * 78 + 11, 8, 92)
+  };
+}
+
+function parseAssetGrid(asset) {
+  return parseGridRef(`${asset.grid || ""} ${asset.location || ""} ${asset.summary || ""} ${asset.label || ""}`);
+}
+
+function parseGridRef(gridRef) {
+  if (!gridRef || gridRef === "TBC") return null;
+  const match = String(gridRef).trim().toUpperCase().match(/([A-Z]+)\s*([0-9]+)/);
+  if (!match) return null;
+  return {
+    col: columnNameToNumber(match[1]),
+    row: Number(match[2])
+  };
+}
+
+function columnNameToNumber(name) {
+  return name.split("").reduce((value, char) => value * 26 + char.charCodeAt(0) - 64, 0);
+}
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
 }
 
 function openMasterInfo() {

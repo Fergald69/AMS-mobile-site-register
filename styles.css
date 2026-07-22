@@ -819,6 +819,116 @@ dd {
   font-weight: 900;
 }
 
+.building-local-map {
+  position: relative;
+  min-height: 180px;
+  margin-top: 12px;
+  overflow: hidden;
+  border: 1px solid #d6e3eb;
+  border-radius: 10px;
+  background:
+    linear-gradient(90deg, rgba(11, 88, 131, 0.08) 1px, transparent 1px),
+    linear-gradient(rgba(11, 88, 131, 0.08) 1px, transparent 1px),
+    #eef7fb;
+  background-size: 13% 20%;
+}
+
+.local-building-shape {
+  position: absolute;
+  inset: 18% 12%;
+  border: 3px solid #0ea5d4;
+  background: rgba(255, 255, 255, 0.56);
+  color: #07365f;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  font-weight: 1000;
+  text-align: center;
+}
+
+.local-shape-press {
+  inset: 8% 66% 9% 10%;
+}
+
+.local-shape-ddw {
+  inset: 20% 39% 18% 26%;
+}
+
+.local-shape-dispatch {
+  inset: 15% 27% 16% 52%;
+}
+
+.local-shape-a {
+  inset: 20% 10% 20% 38%;
+  clip-path: polygon(0 0, 100% 0, 100% 72%, 84% 72%, 84% 100%, 18% 100%, 18% 78%, 0 78%);
+}
+
+.local-shape-bcd {
+  inset: 28% 12% 14% 18%;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 55%, 36% 55%, 36% 16%, 0 16%);
+}
+
+.local-shape-house {
+  inset: 38% 10% 22% 60%;
+  transform: rotate(-23deg);
+}
+
+.local-map-marker {
+  position: absolute;
+  z-index: 3;
+  width: 26px;
+  height: 26px;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  box-shadow: 0 2px 5px rgba(3, 24, 43, 0.25);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 1000;
+  display: grid;
+  place-items: center;
+}
+
+.local-category-marker {
+  width: 34px;
+  height: 28px;
+  border-radius: 8px;
+}
+
+.local-category-marker span {
+  position: absolute;
+  right: -7px;
+  top: -8px;
+  min-width: 17px;
+  height: 17px;
+  border-radius: 999px;
+  background: #fff;
+  color: #07365f;
+  border: 1px solid #cbdde8;
+  font-size: 9px;
+  display: grid;
+  place-items: center;
+}
+
+.local-map-note {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 10px;
+  z-index: 4;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--muted);
+  padding: 8px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.local-map-note.compact {
+  left: auto;
+  right: 8px;
+  bottom: 8px;
+}
+
 .building-asset-list {
   display: grid;
   gap: 8px;
