@@ -332,7 +332,7 @@ h2 {
   display: grid;
   place-items: center;
   border: 3px solid #13a7d8;
-  background: rgba(255,255,255,.65);
+  background: rgba(248,252,253,.82);
   color: transparent;
   font-size: 0;
   font-weight: 900;
@@ -364,10 +364,37 @@ h2 {
   outline-offset: 2px;
 }
 
-.zone-west { left: 35%; top: 6%; width: 15%; height: 36%; }
-.zone-dispatch { left: 53%; top: 6%; width: 13%; height: 36%; }
-.zone-a { left: 56%; top: 45%; width: 34%; height: 24%; }
-.zone-press { left: 4%; top: 6%; width: 21%; height: 68%; }
+.zone-west {
+  left: 35%;
+  top: 6%;
+  width: 15%;
+  height: 36%;
+  background: rgba(231, 245, 248, .9);
+}
+
+.zone-dispatch {
+  left: 53%;
+  top: 6%;
+  width: 13%;
+  height: 36%;
+  background: rgba(239, 247, 239, .9);
+}
+
+.zone-a {
+  left: 56%;
+  top: 45%;
+  width: 34%;
+  height: 24%;
+  background: rgba(248, 244, 232, .92);
+}
+
+.zone-press {
+  left: 4%;
+  top: 6%;
+  width: 21%;
+  height: 68%;
+  background: rgba(241, 243, 247, .92);
+}
 .zone-press::after {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
@@ -379,9 +406,17 @@ h2 {
   top: 79%;
   width: 38%;
   height: 17%;
+  background: rgba(235, 243, 239, .92);
   clip-path: polygon(0 0, 35% 0, 35% 34%, 54% 34%, 54% 0, 100% 0, 100% 100%, 0 100%);
 }
-.zone-house { right: 5%; bottom: 5%; width: 12%; height: 11%; transform: rotate(-25deg); }
+.zone-house {
+  right: 5%;
+  bottom: 5%;
+  width: 12%;
+  height: 11%;
+  transform: rotate(-25deg);
+  background: rgba(248, 251, 255, .92);
+}
 .zone-house::after {
   font-size: 8px;
   padding: 1px 4px;

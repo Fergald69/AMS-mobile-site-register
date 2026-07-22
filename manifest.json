@@ -1,0 +1,16 @@
+{
+  "name": "AMS Site Register",
+  "short_name": "AMS",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#eef7fb",
+  "theme_color": "#07365f",
+  "icons": [
+    {
+      "src": "ams-app-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
