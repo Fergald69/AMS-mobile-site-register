@@ -1,0 +1,56 @@
+[
+  {
+    "id": "BUILDING-A",
+    "name": "Building A",
+    "status": "Active",
+    "assetCount": 143
+  },
+  {
+    "id": "BUILDING-BCD",
+    "name": "Building BCD",
+    "status": "Active",
+    "assetCount": 77
+  },
+  {
+    "id": "AMS-HOUSE",
+    "name": "AMS House",
+    "status": "Active",
+    "assetCount": 10
+  },
+  {
+    "id": "DDW-SHEET-METAL-FAB-TB",
+    "name": "DDW / Sheet Metal Fab/TB",
+    "status": "Active",
+    "assetCount": 19
+  },
+  {
+    "id": "DISPATCH-WAREHOUSE",
+    "name": "Dispatch Warehouse",
+    "status": "Active",
+    "assetCount": 15
+  },
+  {
+    "id": "PRESS-3-4",
+    "name": "Press 3 & 4",
+    "status": "Active",
+    "assetCount": 94
+  },
+  {
+    "id": "NORTH-GATE",
+    "name": "North Gate",
+    "status": "Active",
+    "assetCount": 4
+  },
+  {
+    "id": "SITE-WIDE",
+    "name": "Site-wide",
+    "status": "Active",
+    "assetCount": 34
+  },
+  {
+    "id": "BILLET-LOCATIONS",
+    "name": "Billet Locations",
+    "status": "Active",
+    "assetCount": 41
+  }
+]

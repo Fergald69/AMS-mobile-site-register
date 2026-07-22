@@ -9,21 +9,64 @@
 <body>
   <main class="app-shell">
     <header class="app-header">
-      <div>
-        <p class="eyebrow">Prototype 03 - 18 Jul 2026</p>
-        <h1>AMS Site Register</h1>
+      <div class="app-brand">
+        <img src="ams-logo-phone.png" alt="AMS">
+        <div>
+          <p class="eyebrow">Prototype 04 - 20 Jul 2026</p>
+          <h1>Site Register</h1>
+        </div>
       </div>
       <button class="master-link" id="masterInfoButton" type="button">Info</button>
     </header>
 
+    <section class="map-card home-map-card" id="mapView">
+      <div class="section-title">
+        <h2>AMS Site Map</h2>
+        <span id="resultCount">Tap a building</span>
+      </div>
+      <div class="mini-map" id="miniMap" aria-label="Simplified AMS site map preview">
+        <button class="zone zone-west" type="button" data-building-target="DDW / Sheet Metal Fab/TB" data-map-label="DDW">DDW</button>
+        <button class="zone zone-dispatch" type="button" data-building-target="Dispatch Warehouse" data-map-label="Dispatch">Dispatch</button>
+        <button class="zone zone-a" type="button" data-building-target="Building A" data-map-label="Building A">Building A</button>
+        <button class="zone zone-press" type="button" data-building-target="Press 3 &amp; 4" data-map-label="Press 3 & 4">Press 3 & 4</button>
+        <button class="zone zone-bcd" type="button" data-building-target="Building BCD" data-map-label="BCD">BCD</button>
+        <button class="zone zone-house" type="button" data-building-target="AMS House" data-map-label="AMSH">AMS House</button>
+      </div>
+    </section>
+
+    <section class="filter-strip home-filter-strip" aria-label="Asset filters">
+      <button class="active" data-filter="all">All</button>
+      <button data-filter="doors">Doors</button>
+      <button data-filter="lighting">Lighting</button>
+      <button data-filter="streetlights">Street Lights</button>
+      <button data-filter="cctv">CCTV</button>
+      <button data-filter="salt">Salt</button>
+      <button data-filter="rodent">Rodent</button>
+      <button data-filter="ev">EV</button>
+      <button data-filter="bike">Bike</button>
+      <button data-filter="motorbike">Motorbike</button>
+      <button data-filter="carparks">Car Parks</button>
+      <button data-filter="security">Gates</button>
+      <button data-filter="fire">Fire</button>
+      <button data-filter="water">Water</button>
+      <button data-filter="defib">Defib</button>
+      <button data-filter="electrical">Electrical</button>
+      <button data-filter="billet">Billet</button>
+    </section>
+
+    <section class="search-card compact-search-card" id="searchView">
+      <label for="assetSearch">Search</label>
+      <input id="assetSearch" type="search" placeholder="Search assets, tasks, buildings, grid refs...">
+    </section>
+
     <section class="data-status-card" id="statusView">
       <div>
         <span>Current export</span>
-        <strong>301 assets</strong>
+        <strong id="exportAssetCount">Loading</strong>
       </div>
       <div>
         <span>Buildings</span>
-        <strong>8 records</strong>
+        <strong id="exportBuildingCount">Loading</strong>
       </div>
       <div>
         <span>Mode</span>
@@ -39,51 +82,12 @@
       <button class="mini-action" id="inlineInfoButton" type="button">View Summary</button>
     </section>
 
-    <section class="search-card" id="searchView">
-      <label for="assetSearch">Search</label>
-      <input id="assetSearch" type="search" placeholder="Search assets, buildings, grid refs...">
-    </section>
-
-    <section class="filter-strip" aria-label="Asset filters">
-      <button class="active" data-filter="all">All</button>
-      <button data-filter="doors">Doors</button>
-      <button data-filter="lighting">Lighting</button>
-      <button data-filter="streetlights">Street Lights</button>
-      <button data-filter="cctv">CCTV</button>
-      <button data-filter="salt">Salt</button>
-      <button data-filter="rodent">Rodent</button>
-      <button data-filter="ev">EV</button>
-      <button data-filter="bike">Bike</button>
-      <button data-filter="carparks">Car Parks</button>
-      <button data-filter="security">Gates</button>
-      <button data-filter="fire">Fire</button>
-      <button data-filter="water">Water</button>
-      <button data-filter="defib">Defib</button>
-      <button data-filter="building">Buildings</button>
-      <button data-filter="other">Other</button>
-    </section>
-
     <section class="summary-card" id="summaryView">
       <div class="section-title">
         <h2>Asset Summary</h2>
         <span>Tap to filter</span>
       </div>
       <div id="assetSummary" class="asset-summary-grid"></div>
-    </section>
-
-    <section class="map-card" id="mapView">
-      <div class="section-title">
-        <h2>Mobile Map Preview</h2>
-        <span id="resultCount">0 assets</span>
-      </div>
-      <div class="mini-map" id="miniMap" aria-label="Simplified AMS site map preview">
-        <div class="zone zone-west">DDW</div>
-        <div class="zone zone-dispatch">Dispatch</div>
-        <div class="zone zone-a">Building A</div>
-        <div class="zone zone-press">Press 3 & 4</div>
-        <div class="zone zone-bcd">BCD</div>
-        <div class="zone zone-house">AMS House</div>
-      </div>
     </section>
 
     <section class="building-card" id="buildingsView">
@@ -133,12 +137,23 @@
       <button class="close-sheet" id="closeBuildingSheet" type="button">Close</button>
       <p class="eyebrow">Building</p>
       <h2 id="buildingTitle">Building</h2>
-      <dl>
+      <dl class="building-facts">
         <div><dt>Status</dt><dd id="buildingStatus"></dd></div>
         <div><dt>Records</dt><dd id="buildingRecordCount"></dd></div>
         <div><dt>Main Groups</dt><dd id="buildingGroups"></dd></div>
       </dl>
+      <div class="sheet-action-row">
+        <button class="secondary-sheet-action" id="showBuildingTasks" type="button">Building Tasks</button>
+        <button class="secondary-sheet-action" id="showBuildingProviders" type="button">Providers</button>
+      </div>
       <div id="buildingBreakdown" class="building-breakdown"></div>
+      <div class="building-filter-panel">
+        <label for="buildingAssetFilter">Asset category</label>
+        <select id="buildingAssetFilter">
+          <option value="all">All asset categories</option>
+        </select>
+      </div>
+      <div id="buildingAssetList" class="building-asset-list"></div>
       <button class="primary-sheet-action" id="showBuildingAssets" type="button">Show this building's assets</button>
     </div>
   </aside>
@@ -150,11 +165,11 @@
       <h2>Current Mobile Version</h2>
       <dl>
         <div><dt>Version</dt><dd>Prototype 03</dd></div>
-        <div><dt>Data Date</dt><dd>18 July 2026</dd></div>
+        <div><dt>Data Date</dt><dd>22 July 2026</dd></div>
         <div><dt>Source</dt><dd>AMS current master HTML</dd></div>
         <div><dt>Export</dt><dd>All Site Assets Index</dd></div>
-        <div><dt>Assets</dt><dd>283 records</dd></div>
-        <div><dt>Buildings</dt><dd>8 records</dd></div>
+        <div><dt>Assets</dt><dd>437 records</dd></div>
+        <div><dt>Buildings</dt><dd>9 records</dd></div>
         <div><dt>Mode</dt><dd>Read-only mobile prototype</dd></div>
       </dl>
       <div class="info-panel">

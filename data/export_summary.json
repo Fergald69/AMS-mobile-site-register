@@ -1,0 +1,27 @@
+{
+  "exportDate": "2026-07-22",
+  "source": "C:\\Users\\fdennehy\\Documents\\Codex\\2026-07-16\\is\\outputs\\AMS_INTERACTIVE_SITE_REGISTER_CURRENT_MASTER_FIRE_FILTER_ICONS_LARGER_2026-07-22.html",
+  "assetCount": 437,
+  "buildingCount": 9,
+  "assetTypes": {
+    "ev": 13,
+    "water": 32,
+    "billet": 41,
+    "bike": 7,
+    "cctv": 52,
+    "doors": 66,
+    "electrical": 1,
+    "lighting": 71,
+    "other": 73,
+    "rodent": 31,
+    "salt": 7,
+    "carparks": 5,
+    "fire": 4,
+    "building": 1,
+    "defib": 1,
+    "motorbike": 2,
+    "security": 2,
+    "streetlights": 28
+  },
+  "note": "Read-only app export. Main AMS master remains source of truth."
+}
